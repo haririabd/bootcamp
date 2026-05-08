@@ -1,0 +1,12 @@
+:80 {
+    # Serve files out of the /srv directory
+    root * /srv
+
+    # Enable gzip compression
+    encode gzip
+
+    # Handle SPA routing: try the exact file, then fall back to index.html
+    try_files {path} /admin/index.html
+
+    file_server
+}

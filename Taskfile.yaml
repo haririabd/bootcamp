@@ -1,0 +1,95 @@
+version: "3"
+
+dotenv: [".env"]
+
+tasks:
+  # ─── Development ─────────────────────────────────────────────
+  dev:
+    desc: Start all services concurrently
+    deps: [dev:api, dev:web, dev:admin]
+
+  dev:web:
+    desc: Start web app (port 3000)
+    dir: apps/web
+    cmd: pnpm dev
+
+  dev:admin:
+    desc: Start admin app (port 5173)
+    dir: apps/admin
+    cmd: pnpm dev
+
+  dev:api:
+    desc: Start .NET API (port 5010)
+    dir: services/api-dotnet
+    cmd: dotnet watch run
+
+  dev:swagger:
+    desc: Open API docs (Scalar UI)
+    cmd: open http://localhost:5010/scalar/v1
+
+  # ─── Build ───────────────────────────────────────────────────
+  build:
+    desc: Build all projects
+    cmd: pnpm turbo run build
+
+  lint:
+    desc: Lint all JS/TS projects
+    cmd: pnpm turbo run lint
+
+  # ─── Code Generation ─────────────────────────────────────────
+  generate:
+    desc: Regenerate types from TypeSpec
+    cmds:
+      - pnpm exec tsp compile contracts/typespec/main.tsp
+      - pnpm exec openapi-ts -i contracts/openapi/openapi.yaml -o contracts/generated/ts/src -c @hey-api/client-fetch
+
+  generate:dotnet:
+    desc: Regenerate C# models (reference only)
+    cmd: bash contracts/generate-dotnet.sh
+
+  # ─── Database ────────────────────────────────────────────────
+  db:migrate:
+    desc: Apply EF Core migrations
+    dir: services/api-dotnet
+    cmd: dotnet ef database update
+
+  db:migration:
+    desc: Create a new migration
+    dir: services/api-dotnet
+    cmd: dotnet ef migrations add {{.CLI_ARGS}}
+
+  # ─── Infrastructure ──────────────────────────────────────────
+  infra:up:
+    desc: Start Docker infrastructure (PostgreSQL)
+    cmd: docker compose up -d
+
+  infra:down:
+    desc: Stop Docker infrastructure
+    cmd: docker compose down
+
+  infra:reset:
+    desc: Reset database (destroy + recreate)
+    cmds:
+      - docker compose down -v
+      - docker compose up -d
+      - sleep 3
+      - task db:migrate
+
+  # ─── Clean ───────────────────────────────────────────────────
+  clean:
+    desc: Remove all build artifacts and generated files
+    cmds:
+      - rm -rf apps/web/.next
+      - rm -rf apps/admin/dist
+      - rm -rf services/api-dotnet/bin services/api-dotnet/obj
+      - rm -rf node_modules/.cache
+      - rm -rf .turbo
+
+  # ─── Utilities ───────────────────────────────────────────────
+  check-types:
+    desc: Type-check all projects
+    cmd: pnpm turbo run check-types
+
+  install:
+    desc: Install all dependencies
+    cmd: pnpm install

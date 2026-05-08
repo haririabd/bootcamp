@@ -1,0 +1,19 @@
+generatorName: csharp
+inputSpec: ./openapi/openapi.yaml
+outputDir: ./generated/dotnet
+globalProperties:
+  models: ""
+  modelDocs: "false"
+  modelTests: "false"
+additionalProperties:
+  targetFramework: net10.0
+  packageName: KanbanApi.Contracts
+  modelPackage: Models
+  nullableReferenceTypes: "true"
+  useCollection: "true"
+  netCoreProjectFile: "true"
+  validatable: "false"
+  useDataAnnotations: "false"
+  generatePropertyChanged: "false"
+  equatable: "false"
+templateDir: ./openapi-generator-templates

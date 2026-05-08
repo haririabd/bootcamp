@@ -1,0 +1,21 @@
+extends:
+  - recommended
+
+rules:
+  # Operation IDs are descriptive enough for code generation
+  operation-summary: off
+
+  # We use cookie auth — defined at root level in TypeSpec
+  security-defined: off
+
+  # Not relevant for internal/bootcamp project
+  info-license: off
+
+  # Expected for local development
+  no-server-example.com: off
+
+  # Tag descriptions are optional for us
+  tag-description: off
+
+  # We'll add 4xx responses where meaningful, not everywhere
+  operation-4xx-response: warn

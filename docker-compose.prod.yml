@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: kanban-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kanban
+      POSTGRES_PASSWORD: kanban_dev
+      POSTGRES_DB: kanban
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kanban -d kanban"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kanban_net
+
+  api:
+    build:
+      context: .
+      dockerfile: services/api-dotnet/Dockerfile
+    container_name: kanban-api
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=Host=postgres;Port=5432;Database=kanban;Username=kanban;Password=kanban_dev
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - kanban_net
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: kanban-web
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=/api
+    networks:
+      - kanban_net
+
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+    container_name: kanban-admin
+    restart: unless-stopped
+    networks:
+      - kanban_net
+
+  gateway:
+    image: caddy:2-alpine
+    container_name: kanban-gateway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443" # Expose 443 in case you want to enable automatic HTTPS later
+    volumes:
+      - ./gateway/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - api
+      - web
+      - admin
+    networks:
+      - kanban_net
+
+networks:
+  kanban_net:
+    driver: bridge
+
+volumes:
+  postgres_data:

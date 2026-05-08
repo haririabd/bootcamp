@@ -1,0 +1,25 @@
+
+// THIS FILE IS AUTO-GENERATED — DO NOT EDIT
+{{#models}}
+{{#model}}
+namespace {{packageName}}.Models;
+
+{{#description}}
+/// <summary>
+/// {{.}}
+/// </summary>
+{{/description}}
+public record {{classname}}
+{
+{{#vars}}
+    {{#description}}
+    /// <summary>
+    /// {{.}}
+    /// </summary>
+    {{/description}}
+    public {{#isNullable}}{{datatypeWithEnum}}?{{/isNullable}}{{^isNullable}}{{datatypeWithEnum}}{{/isNullable}} {{name}} { get; init; }{{#defaultValue}} = {{{.}}};{{/defaultValue}}
+
+{{/vars}}
+}
+{{/model}}
+{{/models}}

@@ -1,0 +1,16 @@
+:80 {
+    # 1. API Traffic -> .NET API
+    handle /api/* {
+        reverse_proxy api:5010
+    }
+
+    # 2. Admin Traffic -> Admin Caddy Container
+    handle /admin/* {
+        reverse_proxy admin:80
+    }
+
+    # 3. Everything Else -> Next.js Web App
+    handle /* {
+        reverse_proxy web:3000
+    }
+}

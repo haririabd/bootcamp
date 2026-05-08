@@ -1,0 +1,21 @@
+procs:
+  api:
+    shell: >-
+      docker buildx build --platform linux/amd64 --push
+      -t ghcr.io/$GH_ORG/$GH_REPO/api:$VERSION
+      -f services/api-dotnet/Dockerfile .
+      && echo "✅ api done"
+
+  web:
+    shell: >-
+      docker buildx build --platform linux/amd64 --push
+      -t ghcr.io/$GH_ORG/$GH_REPO/web:$VERSION
+      -f apps/web/Dockerfile .
+      && echo "✅ web done"
+
+  admin:
+    shell: >-
+      docker buildx build --platform linux/amd64 --push
+      -t ghcr.io/$GH_ORG/$GH_REPO/admin:$VERSION
+      -f apps/admin/Dockerfile .
+      && echo "✅ admin done"
