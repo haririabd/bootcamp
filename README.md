@@ -1,5 +1,3 @@
-
-
 # Task Management App (Kanban Board)
 
 A full-stack Kanban board application built as a monorepo with Turborepo.
